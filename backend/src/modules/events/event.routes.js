@@ -58,11 +58,9 @@ router.get('/tracker.js', (req, res) => {
     fetch(serverUrl + '/api/events/track', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': navigator.userAgent
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
-      mode: 'cors'
+      body: JSON.stringify(payload)
     }).catch(function(err) {
       console.error('Pulse Track Failed:', err);
     });
