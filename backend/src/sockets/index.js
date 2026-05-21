@@ -14,28 +14,35 @@ const initSockets = (server) => {
     // User joins a project room to avoid global broadcast leakage
     socket.on('joinProject', (projectId) => {
       if (projectId) {
-        const roomName = `project_${projectId}`;
-        socket.join(roomName);
+        socket.join(`project_${projectId}`);
         socket.currentProjectId = projectId;
-        const count = io.sockets.adapter.rooms.get(roomName)?.size || 0;
-        io.to(roomName).emit('liveVisitors', count);
+        const visitorCount = io.sockets.adapter.rooms.get(`visitors_${projectId}`)?.size || 0;
+        io.to(`project_${projectId}`).emit('liveVisitors', visitorCount);
+      }
+    });
+
+    socket.on('joinVisitor', (projectId) => {
+      if (projectId) {
+        socket.join(`visitors_${projectId}`);
+        socket.currentVisitorProjectId = projectId;
+        const visitorCount = io.sockets.adapter.rooms.get(`visitors_${projectId}`)?.size || 0;
+        io.to(`project_${projectId}`).emit('liveVisitors', visitorCount);
       }
     });
 
     socket.on('leaveProject', (projectId) => {
       if (projectId) {
-        const roomName = `project_${projectId}`;
-        socket.leave(roomName);
-        const count = io.sockets.adapter.rooms.get(roomName)?.size || 0;
-        io.to(roomName).emit('liveVisitors', count);
+        socket.leave(`project_${projectId}`);
       }
     });
 
     socket.on('disconnect', () => {
-      if (socket.currentProjectId) {
-        const roomName = `project_${socket.currentProjectId}`;
-        const count = io.sockets.adapter.rooms.get(roomName)?.size || 0;
-        io.to(roomName).emit('liveVisitors', count);
+      const projectId = socket.currentVisitorProjectId;
+      if (projectId) {
+        setTimeout(() => {
+          const visitorCount = io.sockets.adapter.rooms.get(`visitors_${projectId}`)?.size || 0;
+          io.to(`project_${projectId}`).emit('liveVisitors', visitorCount);
+        }, 100);
       }
     });
   });
