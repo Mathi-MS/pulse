@@ -18,6 +18,7 @@ export default function Dashboard() {
   const activeProject = useProjectStore(state => state.activeProject);
   const [liveEvents, setLiveEvents] = useState([]);
   const [socketConnected, setSocketConnected] = useState(false);
+  const [liveVisitors, setLiveVisitors] = useState(0);
 
   // Fetch metrics using React Query
   const { data, isLoading, isError, refetch } = useQuery({
@@ -43,6 +44,10 @@ export default function Dashboard() {
     socket.on('connect', () => {
       setSocketConnected(true);
       socket.emit('joinProject', activeProject._id);
+    });
+
+    socket.on('liveVisitors', (count) => {
+      setLiveVisitors(count);
     });
 
     socket.on('newEvent', (newEvent) => {
@@ -133,17 +138,20 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Card 2: Active Users */}
+        {/* Card 2: Live Visitors */}
         <div className="glass-card glass-card-hover rounded-xl p-5 relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Customers</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Live on Site</span>
             <div className="rounded-lg bg-pink-600/10 p-2 text-pink-400">
               <Users className="h-5 w-5" />
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-2xl font-bold text-slate-100">{totalActiveUsers.toLocaleString()}</h3>
-            <p className="text-[10px] text-slate-500 font-medium mt-1">Unique identified user sessions</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-2xl font-bold text-slate-100">{liveVisitors}</h3>
+              <span className="h-2 w-2 rounded-full bg-green-500 animate-ping"></span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-medium mt-1">People on your site right now</p>
           </div>
         </div>
 
