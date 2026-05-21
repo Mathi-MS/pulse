@@ -30,6 +30,9 @@ router.get('/tracker.js', (req, res) => {
     return 'pulse_sid_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 
+  // Ping to wake Render from cold start before tracking
+  fetch(serverUrl + '/health').catch(function() {});
+
   // Get or Create Session
   var sessionId = sessionStorage.getItem(sessionIdKey);
   if (!sessionId) {
@@ -57,12 +60,19 @@ router.get('/tracker.js', (req, res) => {
 
     fetch(serverUrl + '/api/events/track', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }).catch(function(err) {
-      console.error('Pulse Track Failed:', err);
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(function() {
+      // Retry once after 5s (handles Render cold start)
+      setTimeout(function() {
+        fetch(serverUrl + '/api/events/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true
+        }).catch(function(err) { console.error('Pulse Track Failed:', err); });
+      }, 5000);
     });
   }
 

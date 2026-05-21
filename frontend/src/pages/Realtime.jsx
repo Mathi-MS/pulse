@@ -10,6 +10,7 @@ export default function Realtime() {
   const activeProject = useProjectStore(state => state.activeProject);
   
   const [socketConnected, setSocketConnected] = useState(false);
+  const [liveVisitors, setLiveVisitors] = useState(0);
   const [runningEventsCount, setRunningEventsCount] = useState(0);
   const [activeUsersSet, setActiveUsersSet] = useState(new Set());
   const [realtimeFeed, setRealtimeFeed] = useState([]);
@@ -25,6 +26,10 @@ export default function Realtime() {
     socket.on('connect', () => {
       setSocketConnected(true);
       socket.emit('joinProject', activeProject._id);
+    });
+
+    socket.on('liveVisitors', (count) => {
+      setLiveVisitors(count);
     });
 
     socket.on('newEvent', (event) => {
@@ -97,7 +102,7 @@ export default function Realtime() {
             </div>
             <div>
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Session Active Users</span>
-              <h3 className="text-2xl font-bold text-slate-200 mt-0.5">{activeUsersCount}</h3>
+              <h3 className="text-2xl font-bold text-slate-200 mt-0.5">{liveVisitors}</h3>
             </div>
           </div>
           <p className="text-[9px] text-slate-500 mt-3 border-t border-slate-900 pt-2">
