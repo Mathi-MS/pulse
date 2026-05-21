@@ -22,7 +22,7 @@ router.get('/tracker.js', (req, res) => {
   const trackerScript = `
 (function() {
   var apiKey = window.PULSE_API_KEY || '';
-  var serverUrl = window.PULSE_SERVER_URL || 'http://localhost:5000';
+  var serverUrl = window.PULSE_SERVER_URL || 'https://pulse-rhrc.onrender.com';
   var userIdKey = 'pulse_user_id';
   var sessionIdKey = 'pulse_session_id';
 
