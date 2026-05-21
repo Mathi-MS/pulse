@@ -116,8 +116,7 @@ router.get('/tracker.js', (req, res) => {
 });
 
 // Public Rate Limited Tracking Endpoint
-router.options('/track', cors({ origin: '*' }));
-router.post('/track', cors({ origin: '*' }), trackingLimiter, trackEvent);
+router.post('/track', trackingLimiter, trackEvent);
 
 // Private Analytical Query Endpoints
 router.get('/', protect, getEvents);

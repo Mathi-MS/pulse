@@ -23,9 +23,16 @@ const server = http.createServer(app);
 const io = initSockets(server);
 app.set('io', io);
 
+// Wildcard CORS for public SDK endpoints (must be before the restrictive global cors)
+const publicCors = cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] });
+app.options('/tracker.js', publicCors);
+app.use('/tracker.js', publicCors);
+app.options('/api/events/track', publicCors);
+app.use('/api/events/track', publicCors);
+
 // Basic Middlewares
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173" || "https://pulse-1-q4w2.onrender.com",
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
