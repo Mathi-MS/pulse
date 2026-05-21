@@ -27,6 +27,8 @@ app.set('io', io);
 const publicCors = cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] });
 app.options('/tracker.js', publicCors);
 app.use('/tracker.js', publicCors);
+app.options('/api/events/tracker.js', publicCors);
+app.use('/api/events/tracker.js', publicCors);
 app.options('/api/events/track', publicCors);
 app.use('/api/events/track', publicCors);
 
