@@ -24,10 +24,6 @@ const io = initSockets(server);
 app.set('io', io);
 
 // Basic Middlewares
-app.use('/tracker.js', cors({ origin: '*' }));
-app.use('/api/events/track', cors({ origin: '*' }));
-app.use('/api/events/tracker.js', cors({ origin: '*' }));
-
 app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE"],

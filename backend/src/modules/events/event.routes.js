@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const { trackEvent, getEvents, exportEventsCsv } = require('./event.controller');
 const { protect } = require('../../middleware/auth');
@@ -115,7 +116,8 @@ router.get('/tracker.js', (req, res) => {
 });
 
 // Public Rate Limited Tracking Endpoint
-router.post('/track', trackingLimiter, trackEvent);
+router.options('/track', cors({ origin: '*' }));
+router.post('/track', cors({ origin: '*' }), trackingLimiter, trackEvent);
 
 // Private Analytical Query Endpoints
 router.get('/', protect, getEvents);
