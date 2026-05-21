@@ -23,21 +23,16 @@ const server = http.createServer(app);
 const io = initSockets(server);
 app.set('io', io);
 
-// Wildcard CORS for public SDK endpoints (must be before the restrictive global cors)
-const publicCors = cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] });
-app.options('/tracker.js', publicCors);
-app.use('/tracker.js', publicCors);
-app.options('/api/events/tracker.js', publicCors);
-app.use('/api/events/tracker.js', publicCors);
-app.options('/api/events/track', publicCors);
-app.use('/api/events/track', publicCors);
-
 // Basic Middlewares
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  origin: function(origin, callback) {
+    callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+  credentials: false
 }));
+app.options('*', cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
